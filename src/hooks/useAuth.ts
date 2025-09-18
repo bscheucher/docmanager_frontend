@@ -1,30 +1,36 @@
-import { useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+// src/hooks/useAuth.ts
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  
-  return context;
-};
+import { useAuth as useAuthContext } from '../contexts/AuthContext';
+
+// Re-export the main useAuth hook for consistency
+export const useAuth = useAuthContext;
 
 // Helper hook to get just the current user
 export const useCurrentUser = () => {
-  const { state } = useAuth();
-  return state.user;
+  const { user } = useAuth();
+  return user;
 };
 
 // Helper hook to check if user has specific role
 export const useHasRole = (role: string) => {
-  const { state } = useAuth();
-  return state.user?.roles.includes(role) || false;
+  const { hasRole } = useAuth();
+  return hasRole(role);
 };
 
 // Helper hook to check authentication status
 export const useIsAuthenticated = () => {
-  const { state } = useAuth();
-  return state.isAuthenticated;
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated;
+};
+
+// Helper hook to check if user is admin
+export const useIsAdmin = () => {
+  const { isAdmin } = useAuth();
+  return isAdmin();
+};
+
+// Helper hook for logout functionality
+export const useLogout = () => {
+  const { logout } = useAuth();
+  return logout;
 };
