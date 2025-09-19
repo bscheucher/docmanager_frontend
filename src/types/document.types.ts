@@ -1,6 +1,7 @@
 // src/types/document.types.ts
 
 export interface Document {
+  uploadedAt: string | number | Date;
   id: number;
   title: string;
   category?: string;
