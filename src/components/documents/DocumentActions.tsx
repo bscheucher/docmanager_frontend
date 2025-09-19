@@ -21,12 +21,13 @@ export const DocumentActions: React.FC<DocumentActionsProps> = ({ document, onDe
       setIsDownloading(true);
       const blob = await documentService.downloadDocument(document.id);
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      // Use window.document to access the global DOM document object
+      const link = window.document.createElement('a');
       link.href = url;
-      link.download = document.title;
-      document.body.appendChild(link);
+      link.download = document.title; // This correctly uses the Document prop's title
+      window.document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      window.document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download failed:', error);

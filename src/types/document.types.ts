@@ -1,4 +1,3 @@
-
 // src/types/document.types.ts
 
 export interface Document {
