@@ -3,15 +3,21 @@
 import React, { useState } from 'react';
 import { useDocuments } from '../../hooks/useDocuments';
 import { useTags } from '../../hooks/useTags';
+import { Document } from '../../types/document.types';
 import { Upload, X } from 'lucide-react';
 
 interface DocumentUploadProps {
   onSuccess?: () => void;
   onCancel?: () => void;
+  uploadFunction?: (file: File, title: string, category?: string, tags?: string[]) => Promise<Document>;
 }
 
-export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onSuccess, onCancel }) => {
-  const { uploadDocument } = useDocuments();
+export const DocumentUpload: React.FC<DocumentUploadProps> = ({ 
+  onSuccess, 
+  onCancel, 
+  uploadFunction 
+}) => {
+  const { uploadDocument: defaultUploadDocument } = useDocuments();
   const { tags } = useTags();
   
   const [file, setFile] = useState<File | null>(null);
@@ -20,6 +26,9 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onSuccess, onCan
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string>('');
+
+  // Use the passed uploadFunction or fallback to the default one
+  const uploadDoc = uploadFunction || defaultUploadDocument;
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -49,7 +58,7 @@ export const DocumentUpload: React.FC<DocumentUploadProps> = ({ onSuccess, onCan
     try {
       setIsUploading(true);
       setError('');
-      await uploadDocument(file, title.trim(), category.trim() || undefined, selectedTags);
+      await uploadDoc(file, title.trim(), category.trim() || undefined, selectedTags);
       onSuccess?.();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Upload failed');

@@ -6,12 +6,15 @@ import { DocumentList } from '../components/documents/DocumentList';
 import { DocumentUpload } from '../components/documents/DocumentUpload';
 import { SearchBar } from '../components/common/SearchBar';
 import { useSearch } from '../hooks/useSearch';
+import { useDocuments } from '../hooks/useDocuments';
 import { Upload, Plus } from 'lucide-react';
 
 export const DocumentsPage: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
   const { searchDocuments, searchResults, isSearching } = useSearch();
+  const { documents, loading, error, uploadDocument, deleteDocument } = useDocuments(selectedCategory || undefined);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -22,7 +25,11 @@ export const DocumentsPage: React.FC = () => {
 
   const handleUploadSuccess = () => {
     setShowUpload(false);
-    // Refresh the document list (handled by useDocuments hook)
+    // Document list will be automatically updated via shared hook instance
+  };
+
+  const handleUpload = async (file: File, title: string, category?: string, tags?: string[]) => {
+    return await uploadDocument(file, title, category, tags);
   };
 
   return (
@@ -64,7 +71,15 @@ export const DocumentsPage: React.FC = () => {
         )}
 
         {/* Document List */}
-        <DocumentList />
+        <DocumentList 
+          documents={documents}
+          loading={loading}
+          error={error}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+          onDeleteDocument={deleteDocument}
+          onUploadClick={() => setShowUpload(true)}
+        />
 
         {/* Upload Modal */}
         {showUpload && (
@@ -72,6 +87,7 @@ export const DocumentsPage: React.FC = () => {
             <DocumentUpload
               onSuccess={handleUploadSuccess}
               onCancel={() => setShowUpload(false)}
+              uploadFunction={handleUpload}
             />
           </div>
         )}

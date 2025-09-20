@@ -36,7 +36,7 @@ interface DashboardStats {
 
 export const Dashboard: React.FC = () => {
   const { user, isAdmin } = useAuth();
-  const { documents, loading: documentsLoading, deleteDocument } = useDocuments();
+  const { documents, loading: documentsLoading, deleteDocument, uploadDocument } = useDocuments();
   const { users, loading: usersLoading } = useUsers();
   const { tags, loading: tagsLoading } = useTags();
   
@@ -82,7 +82,7 @@ export const Dashboard: React.FC = () => {
 
   const handleUploadSuccess = () => {
     setShowUpload(false);
-    // The useDocuments hook will automatically refetch data
+    // Documents state will be automatically updated via uploadDocument function
   };
 
   const handleDeleteDocument = async (id: number) => {
@@ -93,6 +93,11 @@ export const Dashboard: React.FC = () => {
         alert('Failed to delete document: ' + error.message);
       }
     }
+  };
+
+  // Handle upload with the Dashboard's uploadDocument function
+  const handleUpload = async (file: File, title: string, category?: string, tags?: string[]) => {
+    return await uploadDocument(file, title, category, tags);
   };
 
   // Create stats array for display
@@ -331,6 +336,7 @@ export const Dashboard: React.FC = () => {
             <DocumentUpload
               onSuccess={handleUploadSuccess}
               onCancel={() => setShowUpload(false)}
+              uploadFunction={handleUpload}
             />
           </div>
         )}
