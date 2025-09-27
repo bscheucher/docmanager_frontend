@@ -1,4 +1,4 @@
-// src/components/dashboard/Dashboard.tsx
+// src/components/dashboard/Dashboard.tsx (Updated with Tag Functionality)
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -7,7 +7,8 @@ import { useUsers } from '../../hooks/useUsers';
 import { useTags } from '../../hooks/useTags';
 import { Layout } from '../layout/Layout';
 import { DocumentUpload } from '../documents/DocumentUpload';
-import { DocumentCard } from '../documents/DocumentCard';
+import { TagCreationWidget } from './TagCreationWidget';
+import { QuickDocumentTagger } from './QuickDocumentTagger';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 import { EmptyState } from '../common/EmptyState';
 import { formatFileSize, formatDate } from '../../utils/formatters';
@@ -23,7 +24,9 @@ import {
   Plus,
   Activity,
   Calendar,
-  Archive
+  Archive,
+  Tag,
+  Tags
 } from 'lucide-react';
 
 interface DashboardStats {
@@ -41,6 +44,7 @@ export const Dashboard: React.FC = () => {
   const { tags, loading: tagsLoading } = useTags();
   
   const [showUpload, setShowUpload] = useState(false);
+  const [showQuickTagger, setShowQuickTagger] = useState(false);
   const [stats, setStats] = useState<DashboardStats>({
     totalDocuments: 0,
     recentUploads: 0,
@@ -126,7 +130,7 @@ export const Dashboard: React.FC = () => {
     {
       name: 'Total Tags',
       value: stats.totalTags.toString(),
-      icon: Archive,
+      icon: Tags,
       change: 'Available',
       changeType: 'neutral' as const,
     },
@@ -157,10 +161,6 @@ export const Dashboard: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-blue-500 text-white p-4 rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold">Tailwind Test</h1>
-          <p className="text-blue-100 mt-2">If you see blue background and white text, Tailwind is working!</p>
-        </div>
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -208,106 +208,144 @@ export const Dashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <button 
-                onClick={() => setShowUpload(true)}
-                className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-              >
-                <Upload className="h-5 w-5 mr-2 text-indigo-600" />
-                Upload Document
-              </button>
-              <button 
-                onClick={() => window.location.href = '/documents'}
-                className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-              >
-                <Search className="h-5 w-5 mr-2 text-indigo-600" />
-                Search Documents
-              </button>
-              <button 
-                onClick={() => window.location.href = '/documents'}
-                className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
-              >
-                <FileText className="h-5 w-5 mr-2 text-indigo-600" />
-                View All Documents
-              </button>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Quick Actions & Tag Management */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Quick Actions */}
+            <div className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">Quick Actions</h3>
+              </div>
+              <div className="p-6">
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => setShowUpload(true)}
+                    className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                  >
+                    <Upload className="h-5 w-5 mr-2 text-indigo-600" />
+                    Upload Document
+                  </button>
+                  <button 
+                    onClick={() => setShowQuickTagger(true)}
+                    className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                  >
+                    <Tag className="h-5 w-5 mr-2 text-green-600" />
+                    Tag Documents
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/documents'}
+                    className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                  >
+                    <Search className="h-5 w-5 mr-2 text-blue-600" />
+                    Search Documents
+                  </button>
+                  <button 
+                    onClick={() => window.location.href = '/documents'}
+                    className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                  >
+                    <FileText className="h-5 w-5 mr-2 text-purple-600" />
+                    View All Documents
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Recent Documents */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">Recent Documents</h3>
-              {documents.length > 5 && (
-                <button 
-                  onClick={() => window.location.href = '/documents'}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                >
-                  View all →
-                </button>
+            {/* Tag Management Widget */}
+            <TagCreationWidget />
+          </div>
+
+          {/* Right Column - Recent Documents */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-lg shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">Recent Documents</h3>
+                  {documents.length > 5 && (
+                    <button 
+                      onClick={() => window.location.href = '/documents'}
+                      className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                      View all →
+                    </button>
+                  )}
+                </div>
+              </div>
+              
+              {recentDocuments.length === 0 ? (
+                <div className="p-6">
+                  <EmptyState
+                    icon={FileText}
+                    title="No documents yet"
+                    description="Upload your first document to get started."
+                    action={
+                      <button
+                        onClick={() => setShowUpload(true)}
+                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Upload Document
+                      </button>
+                    }
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="divide-y divide-gray-200">
+                    {recentDocuments.map((doc) => (
+                      <div key={doc.id} className="px-6 py-4 hover:bg-gray-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <FileText className="h-8 w-8 text-gray-400" />
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-900">{doc.title}</p>
+                              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                                <span>
+                                  {doc.category && `${doc.category} • `}
+                                  {doc.fileSize ? formatFileSize(doc.fileSize) : 'Unknown size'}
+                                  {doc.user.username !== user?.username && ` • by ${doc.user.fullName}`}
+                                </span>
+                              </div>
+                              {/* Document Tags */}
+                              {doc.tags && doc.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {doc.tags.slice(0, 3).map((tag) => (
+                                    <span
+                                      key={tag}
+                                      className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                                    >
+                                      {tag}
+                                    </span>
+                                  ))}
+                                  {doc.tags.length > 3 && (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                      +{doc.tags.length - 3}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {formatDate(doc.createdAt)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="px-6 py-3 bg-gray-50">
+                    <button 
+                      onClick={() => window.location.href = '/documents'}
+                      className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                    >
+                      View all documents →
+                    </button>
+                  </div>
+                </>
               )}
             </div>
           </div>
-          
-          {recentDocuments.length === 0 ? (
-            <div className="p-6">
-              <EmptyState
-                icon={FileText}
-                title="No documents yet"
-                description="Upload your first document to get started."
-                action={
-                  <button
-                    onClick={() => setShowUpload(true)}
-                    className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Upload Document
-                  </button>
-                }
-              />
-            </div>
-          ) : (
-            <>
-              <div className="divide-y divide-gray-200">
-                {recentDocuments.map((doc) => (
-                  <div key={doc.id} className="px-6 py-4 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <FileText className="h-8 w-8 text-gray-400" />
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900">{doc.title}</p>
-                          <p className="text-sm text-gray-500">
-                            {doc.category && `${doc.category} • `}
-                            {doc.fileSize ? formatFileSize(doc.fileSize) : 'Unknown size'}
-                            {doc.user.username !== user?.username && ` • by ${doc.user.fullName}`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {formatDate(doc.createdAt)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="px-6 py-3 bg-gray-50">
-                <button 
-                  onClick={() => window.location.href = '/documents'}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                >
-                  View all documents →
-                </button>
-              </div>
-            </>
-          )}
         </div>
 
         {/* Admin Panel Access */}
@@ -339,6 +377,11 @@ export const Dashboard: React.FC = () => {
               uploadFunction={handleUpload}
             />
           </div>
+        )}
+
+        {/* Quick Document Tagger Modal */}
+        {showQuickTagger && (
+          <QuickDocumentTagger onClose={() => setShowQuickTagger(false)} />
         )}
       </div>
     </Layout>

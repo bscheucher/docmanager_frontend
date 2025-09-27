@@ -7,29 +7,10 @@ import { ProtectedRoute, AdminRoute } from './components/auth/ProtectedRoute';
 import { LoginForm } from './components/auth/LoginForm';
 import { RegisterForm } from './components/auth/RegisterForm';
 import { Dashboard } from './components/dashboard/Dashboard';
+import { DocumentsPage } from './pages/DocumentsPage';
+import { AdminPage } from './pages/AdminPage';
 
-// Placeholder components for future implementation
-const DocumentsPage: React.FC = () => (
-  <div className="min-h-screen bg-gray-50 py-8">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Documents</h1>
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-600">Documents management page - Coming soon!</p>
-      </div>
-    </div>
-  </div>
-);
 
-const AdminPage: React.FC = () => (
-  <div className="min-h-screen bg-gray-50 py-8">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Panel</h1>
-      <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-600">Admin panel - Coming soon!</p>
-      </div>
-    </div>
-  </div>
-);
 
 const NotFoundPage: React.FC = () => (
   <div className="min-h-screen bg-gray-50 flex items-center justify-center">
