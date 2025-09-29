@@ -105,8 +105,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     dispatch({ type: 'LOGOUT' });
   };
 
+  // FIXED: Handle roles as strings
   const hasRole = (role: string): boolean => {
-    return state.user?.roles?.some(r => r.name === role) || false;
+    if (!state.user?.roles) return false;
+    return state.user.roles.includes(role);
   };
 
   const isAdmin = (): boolean => {

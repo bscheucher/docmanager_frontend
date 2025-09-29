@@ -6,9 +6,9 @@ export interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  roles: Role[];
+  roles: string[]; // Changed from Role[] to string[]
 }
-
+// Is not used anymore
 export interface Role {
   name: string;
 }
