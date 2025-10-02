@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CreateUserRequest } from '../../types/user.types';
-import { X } from 'lucide-react';
+import { X, Eye, EyeOff } from 'lucide-react';
 
 interface UserFormProps {
   title: string;
@@ -20,9 +20,11 @@ export const UserForm: React.FC<UserFormProps> = ({
   const [formData, setFormData] = useState<CreateUserRequest>({
     username: initialData?.username || '',
     email: initialData?.email || '',
+    password: initialData?.password || '',
     firstName: initialData?.firstName || '',
     lastName: initialData?.lastName || '',
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -33,6 +35,13 @@ export const UserForm: React.FC<UserFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!formData.password || formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       setError('');
@@ -84,6 +93,38 @@ export const UserForm: React.FC<UserFormProps> = ({
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Password *
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+              minLength={6}
+              placeholder="Min. 6 characters"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Password must be at least 6 characters long
+          </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
